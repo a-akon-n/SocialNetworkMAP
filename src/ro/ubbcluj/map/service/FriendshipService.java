@@ -1,7 +1,6 @@
 package ro.ubbcluj.map.service;
 
 import ro.ubbcluj.map.domain.Friendship;
-import ro.ubbcluj.map.domain.User;
 import ro.ubbcluj.map.repository.inSQL.SQLFriendshipRepository;
 
 import java.util.Objects;

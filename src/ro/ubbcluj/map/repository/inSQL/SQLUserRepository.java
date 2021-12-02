@@ -2,19 +2,20 @@ package ro.ubbcluj.map.repository.inSQL;
 
 import ro.ubbcluj.map.domain.User;
 import ro.ubbcluj.map.domain.validators.Validator;
-import ro.ubbcluj.map.repository.inMemory.InMemoryRepository;
+import ro.ubbcluj.map.repository.Repository;
 
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SQLUserRepository extends InMemoryRepository<Long, User> {
-    private String url;
-    private String username;
-    private String password;
+public class SQLUserRepository implements Repository<Long, User> {
+    private final String url;
+    private final String username;
+    private final String password;
+    private final Validator<User> validator;
 
     public SQLUserRepository(Validator<User> validator, String url, String username, String password) {
-        super(validator);
+        this.validator = validator;
         this.url = url;
         this.username = username;
         this.password = password;

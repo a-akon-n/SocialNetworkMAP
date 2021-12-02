@@ -40,8 +40,7 @@ public class Friendship extends Entity<Long>{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Friendship)) return false;
-        Friendship that = (Friendship) o;
+        if (!(o instanceof Friendship that)) return false;
         return (Objects.equals(getUser1(), that.getUser1()) && Objects.equals(getUser2(), that.getUser2())) ||
                 (Objects.equals(getUser1(), that.getUser2()) && Objects.equals(getUser2(), that.getUser1()));
     }

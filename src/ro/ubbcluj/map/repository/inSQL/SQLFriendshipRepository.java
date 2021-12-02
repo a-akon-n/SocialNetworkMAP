@@ -2,19 +2,20 @@ package ro.ubbcluj.map.repository.inSQL;
 
 import ro.ubbcluj.map.domain.Friendship;
 import ro.ubbcluj.map.domain.validators.Validator;
-import ro.ubbcluj.map.repository.inMemory.InMemoryRepository;
+import ro.ubbcluj.map.repository.Repository;
 
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SQLFriendshipRepository extends InMemoryRepository<Long, Friendship> {
-    private String url;
-    private String username;
-    private String password;
+public class SQLFriendshipRepository implements Repository<Long, Friendship> {
+    private final String url;
+    private final String username;
+    private final String password;
+    private final Validator<Friendship> validator;
 
     public SQLFriendshipRepository(Validator<Friendship> validator, String url, String username, String password) {
-        super(validator);
+        this.validator = validator;
         this.url = url;
         this.username = username;
         this.password = password;
