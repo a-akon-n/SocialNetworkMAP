@@ -11,9 +11,10 @@ public interface Graph {
     void addEdge(Friendship friendship);
     void removeEdge(Friendship friendship);
     void createGraph();
-    Set<User> DFS(User root);
-    void printGraph();
-    Set<Set<User>> numberOfConnectedComponents();
+
+    Set<Long> DFS(User root);
+
+    Set<Set<Long>> numberOfConnectedComponents();
     int no_ofComponents();
-    Set<User> longestConnectedComponent();
+    Set<Long> longestConnectedComponent();
 }

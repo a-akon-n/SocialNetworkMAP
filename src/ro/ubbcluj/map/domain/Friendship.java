@@ -3,28 +3,28 @@ package ro.ubbcluj.map.domain;
 import java.util.Objects;
 
 public class Friendship extends Entity<Long>{
-    private User user1;
-    private User user2;
+    private Long user1;
+    private Long user2;
 
-    public Friendship(Long a, User user1, User user2) {
+    public Friendship(Long a, Long user1, Long user2) {
         super(a);
         this.user1 = user1;
         this.user2 = user2;
     }
 
-    public User getUser1() {
+    public Long getUser1() {
         return user1;
     }
 
-    public void setUser1(User user1) {
+    public void setUser1(Long user1) {
         this.user1 = user1;
     }
 
-    public User getUser2() {
+    public Long getUser2() {
         return user2;
     }
 
-    public void setUser2(User user2) {
+    public void setUser2(Long user2) {
         this.user2 = user2;
     }
 
@@ -40,7 +40,8 @@ public class Friendship extends Entity<Long>{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Friendship that)) return false;
+        if (!(o instanceof Friendship)) return false;
+        Friendship that = (Friendship) o;
         return (Objects.equals(getUser1(), that.getUser1()) && Objects.equals(getUser2(), that.getUser2())) ||
                 (Objects.equals(getUser1(), that.getUser2()) && Objects.equals(getUser2(), that.getUser1()));
     }

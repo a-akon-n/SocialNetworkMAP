@@ -1,8 +1,8 @@
-package ro.ubbcluj.map.repository;
+package ro.ubbcluj.map.repository.inFile;
 
 import ro.ubbcluj.map.domain.Entity;
 import ro.ubbcluj.map.domain.validators.Validator;
-import ro.ubbcluj.map.repository.InMemoryRepository;
+import ro.ubbcluj.map.repository.inMemory.InMemoryRepository;
 
 import java.io.File;
 import java.io.FileNotFoundException;

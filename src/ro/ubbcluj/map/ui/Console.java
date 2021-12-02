@@ -7,35 +7,32 @@ import ro.ubbcluj.map.service.FriendshipService;
 import ro.ubbcluj.map.service.Network;
 import ro.ubbcluj.map.service.UserService;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class Console {
     private final UserService userService;
     private final FriendshipService friendshipService;
-    private final Network network;
+    private final Network networkAdjList;
     Scanner input = new Scanner(System.in);
 
     public Console(UserService userService, FriendshipService friendshipService, Network network) {
         this.userService = userService;
         this.friendshipService = friendshipService;
-        this.network = network;
+        this.networkAdjList = network;
     }
+
 
     public static void menu(){
         System.out.println("-----------------------------MENU----------------------------------");
         System.out.println("1. Add user");
         System.out.println("2. Delete user");
+        System.out.println("su. Show all users");
         System.out.println("3. Add friendship");
         System.out.println("4. Delete friendship");
+        System.out.println("sf. Show all friendships");
         System.out.println("5. Number of communities");
         System.out.println("6. Most sociable community");
-        System.out.println("su. Show user list");
-        System.out.println("sf. Show Friendship list");
-        System.out.println("sn. Show Network");
-        System.out.println("l. Load Data");
-        System.out.println("w. Write Data");
+        System.out.println("sn. Show network");
         System.out.println("x. Stop");
         System.out.println("-------------------------------------------------------------------");
     }
@@ -46,11 +43,14 @@ public class Console {
             System.out.println("Insert command: ");
             String command = input.next();
             if(Objects.equals(command, "x")) break;
-            else if (Objects.equals(command, "1")){
+            else if(Objects.equals(command, "1")){
                 addUser();
             }
             else if(Objects.equals(command, "2")){
                 deleteUser();
+            }
+            else if(Objects.equals(command, "su")){
+                showUsers();
             }
             else if(Objects.equals(command, "3")){
                 addFriendship();
@@ -58,26 +58,17 @@ public class Console {
             else if(Objects.equals(command, "4")){
                 deleteFriendship();
             }
+            else if(Objects.equals(command, "sf")){
+                showFriendships();
+            }
             else if(Objects.equals(command, "5")){
                 numberOfCommunities();
             }
             else if(Objects.equals(command, "6")){
                 mostSociableCommunity();
             }
-            else if(Objects.equals(command, "su")){
-                showUsers();
-            }
-            else if(Objects.equals(command, "sf")){
-                showFriendships();
-            }
             else if(Objects.equals(command, "sn")){
                 showNetwork();
-            }
-            else if(Objects.equals(command, "l")){
-                loadData();
-            }
-            else if(Objects.equals(command, "w")){
-                writeData();
             }
             else{
                 System.out.println("Invalid command, try again.");
@@ -85,104 +76,134 @@ public class Console {
         }
     }
 
+    private void showNetwork() {
+        Map<Long, List<Long>> network = networkAdjList.getAdjList();
+        for(Long i = 1l; i <= userService.getNumberOf(); i++){
+            System.out.println(userService.findOne(i) + "  \\||^_^||/  ");
+            for(Long user:network.get(i)){
+                System.out.println("\t" + userService.findOne(user) + "\t----\t");
+            }
+        }
+    }
+
     private void mostSociableCommunity() {
-        System.out.println("The most sociable community is: " + network.longestConnectedComponent());
+        System.out.println("The most sociable community is: " + networkAdjList.longestConnectedComponent());
     }
 
     private void numberOfCommunities() {
-        System.out.println("The number of connected components is: " + network.no_ofComponents());
-    }
-
-    private void writeData() {
-        ArrayList<User> users = new ArrayList<>();
-        for(User user:userService.findAll()){
-            users.add(user);
-        }
-        userService.writeData(users);
-
-        ArrayList<Friendship> friendships = new ArrayList<>();
-        for(Friendship friendship: friendshipService.findAll()){
-            friendships.add(friendship);
-        }
-        friendshipService.writeData(friendships);
-    }
-
-    private void loadData() {
-        userService.loadData();
-        friendshipService.loadData();
-        network.createGraph();
-    }
-
-    private void showNetwork() {
-        network.printGraph();
+        System.out.println("The Number of communities in the network is: " + networkAdjList.no_ofComponents());
     }
 
     private void showFriendships() {
-        for(Friendship friendship:friendshipService.findAll()){
-            System.out.println(friendship);
-        }
-    }
-
-    private void showUsers() {
-        for (User user:userService.findAll()){
-            System.out.println(user);
+        try{
+            for(Friendship friendship:friendshipService.findAll()){
+                System.out.println(friendship);
+            }
+        }catch(ValidationException|IllegalArgumentException e){
+            e.printStackTrace();
         }
     }
 
     private void deleteFriendship() {
-        System.out.println("Insert the id of the friendship to delete: ");
-        Long id = input.nextLong();
-        network.removeEdge(friendshipService.findOne(id));
-        friendshipService.deleteEntity(id);
+        try{
+            System.out.println("Insert the id of the friendship to delete from the database");
+            Long id_friendship = input.nextLong();
+            networkAdjList.removeEdge(friendshipService.findOne(id_friendship));
+            friendshipService.deleteEntity(id_friendship);
+        }catch(ValidationException|IllegalArgumentException|InputMismatchException e){
+            e.printStackTrace();
+        }
     }
 
     private void addFriendship() {
         try{
-            Long id = (Long) friendshipService.getNumberOf() + 1;
-            System.out.println("Insert the id of the first user: ");
-            long id_user = input.nextLong();
-            User user1 = userService.findOne(id_user);
-            System.out.println("Insert the id of the second user: ");
-            id_user = input.nextLong();
-            User user2 = userService.findOne(id_user);
-            Friendship friendship = new Friendship(id,user1,user2);
+            Map<Long, Long> ids = new HashMap<>();
+            int i = 0;
+            Long id_friendship = null;
+            for(Friendship friendship: friendshipService.findAll()){
+                ids.put(friendship.getId(), friendship.getId());
+            }
+            int size = ids.size();
+            while(size != i){
+                Map.Entry<Long, Long> entry = ids.entrySet().iterator().next();
+                if(ids.get(entry.getKey()) != i + 1){
+                    id_friendship = (long) i + 1;
+                    break;
+                }
+                ids.remove(entry.getKey());
+                i++;
+            }
+            if(id_friendship == null)
+                id_friendship = Long.valueOf(size + 1);
+
+            System.out.println("Insert the id of the first user");
+            Long id_user1 = input.nextLong();
+            System.out.println("Insert the id of the second user");
+            Long id_user2 = input.nextLong();
+
+            Friendship friendship = new Friendship(id_friendship, id_user1, id_user2);
             friendshipService.addEntity(friendship);
-            //network.addEdge(friendship);
+            networkAdjList.addEdge(friendship);
+        }catch(ValidationException|IllegalArgumentException|InputMismatchException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void showUsers() {
+        try{
+            for(User user:userService.findAll()){
+                System.out.println(user);
+            }
         }catch(ValidationException|IllegalArgumentException e){
-            System.out.println("Error: " + e);
+            e.printStackTrace();
         }
     }
 
     private void deleteUser() {
         try{
-            System.out.println("Insert the id of the user to delete from the repo: ");
-            Long id = input.nextLong();
-            User user = userService.findOne(id);
-            for (Friendship friendship : friendshipService.findAll()) {
-                if (friendship.getUser1() == user || friendship.getUser2() == user) {
-                    network.removeEdge(friendship);
+            System.out.print("Insert the id of the user to delete from the database: ");
+            Long id_user = input.nextLong();
+            for(Friendship friendship:friendshipService.findAll()){
+                if(friendship.getUser1() == id_user || friendship.getUser2() == id_user)
                     friendshipService.deleteEntity(friendship.getId());
-                }
             }
-            network.removeVertex(user);
-            userService.deleteEntity(id);
-        }catch (ValidationException|IllegalArgumentException e){
-            System.out.println("Error: " + e);
+            networkAdjList.removeVertex(userService.findOne(id_user));
+            userService.deleteEntity(id_user);
+        }catch(ValidationException|IllegalArgumentException|InputMismatchException e){
+            e.printStackTrace();
         }
     }
 
     private void addUser() {
         try{
-            Long id = (Long) userService.getNumberOf() + 1;
-            System.out.println("Insert the first name of the user: ");
-            String firstName = input.next();
-            System.out.println("Insert the last name of the user: ");
-            String lastName = input.next();
-            User user = new User(id, firstName, lastName);
+            Map<Long, Long> ids = new HashMap<>();
+            int i = 0;
+            Long id_user = null;
+            for(User user:userService.findAll()){
+                ids.put(user.getId(), user.getId());
+            }
+            int size = ids.size();
+            while(size != i){
+                Map.Entry<Long, Long> entry = ids.entrySet().iterator().next();
+                if(ids.get(entry.getKey()) != i + 1){
+                    id_user = (long) i + 1;
+                    break;
+                }
+                ids.remove(entry.getKey());
+                i++;
+            }
+            if(id_user == null)
+                id_user = Long.valueOf(size + 1);
+            System.out.println("Insert the first name of the user.");
+            String first_name = input.next();
+            System.out.println("Insert the last name of the user.");
+            String last_name = input.next();
+            User user = new User(id_user, first_name, last_name);
             userService.addEntity(user);
-            network.addVertex(user);
-        }catch(ValidationException | IllegalArgumentException e){
-            System.out.println("Error: " + e);
+            networkAdjList.addVertex(user);
+        }catch(ValidationException|IllegalArgumentException| InputMismatchException e){
+            e.printStackTrace();
         }
     }
+
 }

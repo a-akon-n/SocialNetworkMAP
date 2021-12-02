@@ -1,19 +1,25 @@
 package ro.ubbcluj.map.domain.validators;
 
 import ro.ubbcluj.map.domain.Friendship;
+import ro.ubbcluj.map.domain.User;
+import ro.ubbcluj.map.repository.inMemory.InMemoryRepository;
+import ro.ubbcluj.map.repository.inSQL.SQLUserRepository;
 
-public class FriendshipValidator implements Validator<Friendship>{
 
-    @Override
-    public void validate(Friendship friendship) throws ValidationException {
-        if(friendship.getUser1() == null)
-            throw new ValidationException("Id1 can't be null");
-        if(friendship.getUser2() == null)
-            throw new ValidationException("Id2 can't be null");
-        if(friendship.getUser1().equals(friendship.getUser2()))
-            throw new ValidationException("Id1 can't be the same as Id2!");
+public class FriendshipValidator implements Validator<Friendship> {
+    private final SQLUserRepository repo;
 
-        //TODO: Check if users exist in repo
+    public FriendshipValidator(SQLUserRepository repo) {
+        this.repo = repo;
     }
 
+    @Override
+    public void validate(Friendship entity) throws ValidationException {
+        if(repo.findOne(entity.getUser1()) == null){
+            throw new ValidationException("User 1 doesn't exist");
+        }
+        if(repo.findOne(entity.getUser2()) == null){
+            throw new ValidationException("User 2 doesn't exist");
+        }
+    }
 }
