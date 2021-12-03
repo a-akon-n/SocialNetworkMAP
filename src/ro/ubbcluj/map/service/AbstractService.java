@@ -1,10 +1,11 @@
 package ro.ubbcluj.map.service;
 
 import ro.ubbcluj.map.domain.Entity;
-import ro.ubbcluj.map.repository.inMemory.InMemoryRepository;
+import ro.ubbcluj.map.repository.Repository;
+
 
 public abstract class AbstractService<ID, E extends Entity<ID>> {
-    public InMemoryRepository<ID,E> repository;
+    public Repository<ID,E> repository;
 
     public void addEntity(E entity){
         repository.save(entity);

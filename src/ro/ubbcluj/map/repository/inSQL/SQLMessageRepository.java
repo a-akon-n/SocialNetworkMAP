@@ -142,7 +142,7 @@ public class SQLMessageRepository implements Repository<Long, Message> {
     }
 
     @Override
-    public Message save(Message entity) {
+    public void save(Message entity) {
         String sql = "insert into messages(id, id_user_from, message, date, time) values(?, ?, ?, ?, ?)";
         validator.validate(entity);
 
@@ -167,11 +167,10 @@ public class SQLMessageRepository implements Repository<Long, Message> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     @Override
-    public Message delete(Long aLong) {
+    public void delete(Long aLong) {
         String sql = "delete from messages where id = ?";
 
         try(Connection connection = DriverManager.getConnection(url, username,password);
@@ -183,7 +182,6 @@ public class SQLMessageRepository implements Repository<Long, Message> {
         }catch (SQLException e){
             e.printStackTrace();
         }
-        return null;
     }
 
     @Override

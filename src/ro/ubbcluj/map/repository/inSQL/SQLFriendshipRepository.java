@@ -70,7 +70,7 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
     }
 
     @Override
-    public Friendship save(Friendship entity) {
+    public void save(Friendship entity) {
         String sql = "insert into friendships(id_friendship, id_user1, id_user2) values(?, ?, ?)";
         validator.validate(entity);
 
@@ -82,14 +82,14 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
             statement.setInt(3, entity.getUser2().intValue());
 
             statement.executeUpdate();
+
         }catch(SQLException e){
             e.printStackTrace();
         }
-        return null;
     }
 
     @Override
-    public Friendship delete(Long aLong) {
+    public void delete(Long aLong) {
         String sql = "delete from friendships where id_friendship = ?";
 
         try(Connection connection = DriverManager.getConnection(url, username, password);
@@ -101,7 +101,6 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
         }catch(SQLException e){
             e.printStackTrace();
         }
-        return null;
     }
 
     @Override

@@ -73,7 +73,7 @@ public class SQLUserRepository implements Repository<Long, User> {
     }
 
     @Override
-    public User save(User entity) {
+    public void save(User entity) {
         String sql = "insert into users(id_user, first_name, last_name) values(?, ?, ?)";
         validator.validate(entity);
         try(Connection connection = DriverManager.getConnection(url, username, password);
@@ -87,11 +87,10 @@ public class SQLUserRepository implements Repository<Long, User> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     @Override
-    public User delete(Long aLong) {
+    public void delete(Long aLong) {
 
         String sql = "delete from users where id_user = ?";
 
@@ -104,7 +103,6 @@ public class SQLUserRepository implements Repository<Long, User> {
         }catch (SQLException e){
             e.printStackTrace();
         }
-        return null;
     }
 
     @Override

@@ -1,12 +1,12 @@
 package ro.ubbcluj.map.service;
 
 import ro.ubbcluj.map.domain.Friendship;
-import ro.ubbcluj.map.repository.inSQL.SQLFriendshipRepository;
+import ro.ubbcluj.map.repository.Repository;
 
 import java.util.Objects;
 
 public class FriendshipService extends AbstractService<Long, Friendship> {
-    public FriendshipService(SQLFriendshipRepository friendshipRepository) {
+    public FriendshipService(Repository<Long, Friendship> friendshipRepository) {
         repository = friendshipRepository;
     }
 

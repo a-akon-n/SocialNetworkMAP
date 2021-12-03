@@ -1,12 +1,12 @@
 package ro.ubbcluj.map.service;
 
 import ro.ubbcluj.map.domain.User;
-import ro.ubbcluj.map.repository.inSQL.SQLUserRepository;
+import ro.ubbcluj.map.repository.Repository;
 
 import java.util.Objects;
 
 public class UserService extends AbstractService<Long, User>{
-    public UserService(SQLUserRepository userRepository) {
+    public UserService(Repository<Long, User> userRepository) {
         repository = userRepository;
     }
 
