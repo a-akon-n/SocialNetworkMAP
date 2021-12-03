@@ -24,16 +24,22 @@ public class SQLUserRepository implements Repository<Long, User> {
     @Override
     public User findOne(Long aLong) {
         User user = null;
+        String sql = "select * from users where id_user = ?";
+
         try(Connection connection = DriverManager.getConnection(url, username, password);
-        PreparedStatement statement = connection.prepareStatement("select * from users where id_user="+aLong);
-        ResultSet resultSet = statement.executeQuery()){
+        PreparedStatement statement = connection.prepareStatement(sql)){
+
+            statement.setLong(1, aLong);
+            ResultSet resultSet = statement.executeQuery();
             resultSet.next();
+
             Long id = resultSet.getLong("id_user");
             String first_name = resultSet.getString("first_name");
             String last_name = resultSet.getString("last_name");
 
             user = new User(id, first_name, last_name);
             return user;
+
         }catch (SQLException e){
             e.printStackTrace();
         }
@@ -42,10 +48,13 @@ public class SQLUserRepository implements Repository<Long, User> {
 
     @Override
     public Iterable<User> findAll() {
+
         Set<User> users = new HashSet<>();
+
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement("select * from users");
             ResultSet resultSet = statement.executeQuery()){
+
             while(resultSet.next()){
                 Long id = resultSet.getLong("id_user");
                 String first_name = resultSet.getString("first_name");
@@ -54,7 +63,9 @@ public class SQLUserRepository implements Repository<Long, User> {
                 User user = new User(id, first_name, last_name);
                 users.add(user);
             }
+
             return users;
+
         }catch(SQLException e){
             e.printStackTrace();
         }
@@ -81,9 +92,15 @@ public class SQLUserRepository implements Repository<Long, User> {
 
     @Override
     public User delete(Long aLong) {
+
+        String sql = "delete from users where id_user = ?";
+
         try(Connection connection = DriverManager.getConnection(url, username,password);
-        PreparedStatement statement = connection.prepareStatement("delete from users where id_user = " + aLong)){
+        PreparedStatement statement = connection.prepareStatement(sql)){
+
+            statement.setLong(1, aLong);
             statement.executeUpdate();
+
         }catch (SQLException e){
             e.printStackTrace();
         }
@@ -93,12 +110,16 @@ public class SQLUserRepository implements Repository<Long, User> {
     @Override
     public Long getNumberOf() {
         Long numberOfElem = null;
+
         try(Connection connection = DriverManager.getConnection(url, username, password);
         PreparedStatement statement = connection.prepareStatement("select count(id_user) from users");
         ResultSet resultSet = statement.executeQuery()){
+
             resultSet.next();
             numberOfElem = resultSet.getLong("count");
+
             return numberOfElem;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

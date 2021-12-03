@@ -24,9 +24,13 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
     @Override
     public Friendship findOne(Long aLong) {
         Friendship friendship = null;
+        String sql = "select * from friendships where id_friendship = ?";
+
         try(Connection connection = DriverManager.getConnection(url, username, password);
-            PreparedStatement statement = connection.prepareStatement("select * from friendships where id_friendship = " +  aLong);
-            ResultSet resultSet = statement.executeQuery()){
+            PreparedStatement statement = connection.prepareStatement(sql)){
+
+            statement.setLong(1, aLong);
+            ResultSet resultSet = statement.executeQuery();
             resultSet.next();
 
             Long id = resultSet.getLong("id_friendship");
@@ -44,9 +48,11 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
     @Override
     public Iterable<Friendship> findAll() {
         Set<Friendship> friendships = new HashSet<>();
+
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement("select * from friendships");
             ResultSet resultSet = statement.executeQuery()){
+
             while(resultSet.next()){
                 Long id = resultSet.getLong("id_friendship");
                 Long id_user1 = resultSet.getLong("id_user1");
@@ -67,6 +73,7 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
     public Friendship save(Friendship entity) {
         String sql = "insert into friendships(id_friendship, id_user1, id_user2) values(?, ?, ?)";
         validator.validate(entity);
+
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)){
 
@@ -83,10 +90,14 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
 
     @Override
     public Friendship delete(Long aLong) {
+        String sql = "delete from friendships where id_friendship = ?";
 
         try(Connection connection = DriverManager.getConnection(url, username, password);
-            PreparedStatement statement = connection.prepareStatement("delete from friendships where id_friendship = " + aLong)){
+            PreparedStatement statement = connection.prepareStatement(sql)){
+
+            statement.setLong(1, aLong);
             statement.executeUpdate();
+
         }catch(SQLException e){
             e.printStackTrace();
         }
@@ -96,12 +107,14 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
     @Override
     public Long getNumberOf() {
         Long numberOfElem = null;
+
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement("select count(id_friendship) from friendships");
             ResultSet resultSet = statement.executeQuery()){
-            resultSet.next();
 
+            resultSet.next();
             numberOfElem = resultSet.getLong("count");
+
             return numberOfElem;
         }catch(SQLException e){
             e.printStackTrace();
