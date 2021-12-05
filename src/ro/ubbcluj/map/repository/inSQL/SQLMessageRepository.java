@@ -47,6 +47,21 @@ public class SQLMessageRepository implements Repository<Long, Message> {
             LocalDate date = resultSet.getDate("date").toLocalDate();
             LocalTime time = resultSet.getTime("time").toLocalTime();
             LocalDateTime dateTime = LocalDateTime.of(date, time);
+
+            //Get replyTo message
+            long replyToId = resultSet.getLong("id_reply_to");
+            Message replyTo = null;
+            if(replyToId != 0) {
+                sql = "select * from messages where id = ?";
+                PreparedStatement messageQueryStatement = connection.prepareStatement(sql);
+                messageQueryStatement.setLong(1, replyToId);
+
+                resultSet = messageQueryStatement.executeQuery();
+                resultSet.next();
+
+                replyTo = findOne(resultSet.getLong("id"));
+            }
+
             List<User> to = new ArrayList<>();
 
             //Get all conections to this message
@@ -87,7 +102,7 @@ public class SQLMessageRepository implements Repository<Long, Message> {
 
             User from = new User(id_user, first_name, last_name);
 
-            m = new Message(id, from, to, message, dateTime);
+            m = new Message(id, from, to, message, dateTime, replyTo);
             return m;
 
         }catch (SQLException e){
@@ -119,7 +134,10 @@ public class SQLMessageRepository implements Repository<Long, Message> {
 
     @Override
     public void save(Message entity) {
-        String sql = "insert into messages(id, id_user_from, message, date, time) values(?, ?, ?, ?, ?)";
+        String sql =
+                entity.getReplyTo() == null ?
+                "insert into messages(id, id_user_from, message, date, time) values(?, ?, ?, ?, ?)" :
+                "insert into messages(id, id_user_from, message, date, time, id_reply_to) values(?, ?, ?, ?, ?, ?)";
         validator.validate(entity);
 
         try(Connection connection = DriverManager.getConnection(url, username, password);
@@ -130,6 +148,8 @@ public class SQLMessageRepository implements Repository<Long, Message> {
             statement.setString(3, entity.getMessage());
             statement.setDate(4, Date.valueOf(entity.getDate().toLocalDate()));
             statement.setTime(5, Time.valueOf(entity.getDate().toLocalTime()));
+            if(entity.getReplyTo() != null)
+                statement.setLong(6, entity.getReplyTo().getId());
 
             statement.executeUpdate();
 

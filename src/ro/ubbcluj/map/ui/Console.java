@@ -268,7 +268,7 @@ public class Console {
 
             LocalDateTime localDateTime = LocalDateTime.now();
 
-            Message message = new Message(id_message, from, to, m, localDateTime);
+            Message message = new Message(id_message, from, to, m, localDateTime, null);
             messageService.addEntity(message);
 
         }catch(ValidationException|IllegalArgumentException| InputMismatchException e){
