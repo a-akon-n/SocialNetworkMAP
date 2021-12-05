@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
         String url = "jdbc:postgresql://localhost:5432/social_network";
         String username = "postgres";
-        String password = "12345";
+        String password = "postgre";
 
         UserValidator userValidator = new UserValidator();
         SQLUserRepository userRepository = new SQLUserRepository(userValidator, url, username, password);

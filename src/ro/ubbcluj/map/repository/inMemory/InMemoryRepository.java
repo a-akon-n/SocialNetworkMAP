@@ -34,22 +34,20 @@ public class InMemoryRepository<ID, E extends Entity<ID>> implements Repository<
     }
 
     @Override
-    public E save(E entity) {
+    public void save(E entity) {
         if(entity==null)
             throw new IllegalArgumentException("Entity must not be null");
         validator.validate(entity);
         if(entities.get(entity.getId())!=null)
-            return entity;
         entities.put(entity.getId(),entity);
-        return null;
+
     }
 
     @Override
-    public E delete(ID id) {
+    public void delete(ID id) {
         if(this.findOne(id)==null)
             throw new IllegalArgumentException("Entity with the id " + id + " is null");
         entities.remove(id);
-        return null;
     }
 
     @Override

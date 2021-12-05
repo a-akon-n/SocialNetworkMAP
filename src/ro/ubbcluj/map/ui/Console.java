@@ -78,7 +78,7 @@ public class Console {
 
     private void showNetwork() {
         Map<Long, List<Long>> network = networkAdjList.getAdjList();
-        for(Long i = 1l; i <= userService.getNumberOf(); i++){
+        for(Long i = 1L; i <= userService.getNumberOf(); i++){
             System.out.println(userService.findOne(i) + "  \\||^_^||/  ");
             for(Long user:network.get(i)){
                 System.out.println("\t" + userService.findOne(user) + "\t----\t");
@@ -123,18 +123,7 @@ public class Console {
             for(Friendship friendship: friendshipService.findAll()){
                 ids.put(friendship.getId(), friendship.getId());
             }
-            int size = ids.size();
-            while(size != i){
-                Map.Entry<Long, Long> entry = ids.entrySet().iterator().next();
-                if(ids.get(entry.getKey()) != i + 1){
-                    id_friendship = (long) i + 1;
-                    break;
-                }
-                ids.remove(entry.getKey());
-                i++;
-            }
-            if(id_friendship == null)
-                id_friendship = Long.valueOf(size + 1);
+            id_friendship = getNextId(ids, i, id_friendship);
 
             System.out.println("Insert the id of the first user");
             Long id_user1 = input.nextLong();
@@ -164,7 +153,7 @@ public class Console {
             System.out.print("Insert the id of the user to delete from the database: ");
             Long id_user = input.nextLong();
             for(Friendship friendship:friendshipService.findAll()){
-                if(friendship.getUser1() == id_user || friendship.getUser2() == id_user)
+                if(Objects.equals(friendship.getUser1(), id_user) || Objects.equals(friendship.getUser2(), id_user))
                     friendshipService.deleteEntity(friendship.getId());
             }
             networkAdjList.removeVertex(userService.findOne(id_user));
@@ -182,18 +171,7 @@ public class Console {
             for(User user:userService.findAll()){
                 ids.put(user.getId(), user.getId());
             }
-            int size = ids.size();
-            while(size != i){
-                Map.Entry<Long, Long> entry = ids.entrySet().iterator().next();
-                if(ids.get(entry.getKey()) != i + 1){
-                    id_user = (long) i + 1;
-                    break;
-                }
-                ids.remove(entry.getKey());
-                i++;
-            }
-            if(id_user == null)
-                id_user = Long.valueOf(size + 1);
+            id_user = getNextId(ids, i, id_user);
             System.out.println("Insert the first name of the user.");
             String first_name = input.next();
             System.out.println("Insert the last name of the user.");
@@ -204,6 +182,22 @@ public class Console {
         }catch(ValidationException|IllegalArgumentException| InputMismatchException e){
             e.printStackTrace();
         }
+    }
+
+    private Long getNextId(Map<Long, Long> ids, int i, Long id_user) {
+        int size = ids.size();
+        while(size != i){
+            Map.Entry<Long, Long> entry = ids.entrySet().iterator().next();
+            if(ids.get(entry.getKey()) != i + 1){
+                id_user = (long) i + 1;
+                break;
+            }
+            ids.remove(entry.getKey());
+            i++;
+        }
+        if(id_user == null)
+            id_user = (long) (size + 1);
+        return id_user;
     }
 
 }

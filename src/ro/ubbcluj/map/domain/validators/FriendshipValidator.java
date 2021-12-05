@@ -1,8 +1,6 @@
 package ro.ubbcluj.map.domain.validators;
 
 import ro.ubbcluj.map.domain.Friendship;
-import ro.ubbcluj.map.domain.User;
-import ro.ubbcluj.map.repository.inMemory.InMemoryRepository;
 import ro.ubbcluj.map.repository.inSQL.SQLUserRepository;
 
 
