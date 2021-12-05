@@ -9,6 +9,7 @@ import ro.ubbcluj.map.service.MessageService;
 import ro.ubbcluj.map.service.Network;
 import ro.ubbcluj.map.service.UserService;
 
+import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -44,7 +45,6 @@ public class Console {
         System.out.println("8. Delete message");
         System.out.println("sm. Show all messages");
         System.out.println("9. Reply to message");
-        System.out.println("10. Delete reply");
         System.out.println("sc. Show conversation");
         /*TODO
         System.out.println("11. Send friend request");
@@ -99,9 +99,6 @@ public class Console {
             }
             else if(Objects.equals(command, "9")){
                 addReply();
-            }
-            else if(Objects.equals(command, "10")){
-                deleteReply();
             }
             else if(Objects.equals(command, "sc")){
                 showConversation();
@@ -240,7 +237,6 @@ public class Console {
         return id_user;
     }
 
-    //TODO
     private void addMessage(){
         try{
             Map<Long, Long> ids = new HashMap<>();
@@ -291,10 +287,45 @@ public class Console {
             e.printStackTrace();
         }
     }
+    private void addReply(){
+        try{
+            Map<Long, Long> ids = new HashMap<>();
+            int i = 0;
+            Long id_message = null;
+            for(Message message:messageService.findAll()){
+                ids.put(message.getId(), message.getId());
+            }
+            id_message = getNextId(ids, i, id_message);
 
-    private void addReply(){}
-    private void deleteReply(){}
+            System.out.println("Reply to message with id: ");
+            Long replyId = input.nextLong();
+            Message replyTo = messageService.findOne(replyId);
 
+            System.out.println("From (id): ");
+            Long fromId = Long.parseLong(input.next());
+            User from = userService.findOne(fromId);
+
+            System.out.println("To (id1,id2, ...): ");
+            String toString = input.next();
+            String[] stringIds = toString.split(",");
+            ArrayList<Long> toIds = new ArrayList<>();
+            Arrays.stream(stringIds).forEach(id -> toIds.add(Long.parseLong(id)));
+            List<User> to = new ArrayList<>();
+            toIds.forEach(id -> to.add(userService.findOne(id)));
+
+            System.out.println("Message: ");
+            String m = input.next();
+
+            LocalDateTime localDateTime = LocalDateTime.now();
+
+            Message message = new Message(id_message, from, to, m, localDateTime, replyTo);
+            messageService.addEntity(message);
+
+        }catch(ValidationException|IllegalArgumentException| InputMismatchException e){
+            e.printStackTrace();
+        }
+    }
+    //TODO
     private void showConversation(){}
 
 }
