@@ -62,7 +62,8 @@ public class Message extends Entity<Long> {
     @Override
     public String toString() {
         return "Message{" +
-                "from=" + from +
+                "id=" + getId() +
+                ", from=" + from +
                 ", to=" + to +
                 ", message='" + message + '\'' +
                 ", date=" + date +

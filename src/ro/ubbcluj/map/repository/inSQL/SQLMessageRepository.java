@@ -35,39 +35,52 @@ public class SQLMessageRepository implements Repository<Long, Message> {
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
+            //Get message
             statement.setLong(1, aLong);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
 
+            //Get id, id_user_from, message, dateTime
             long id = resultSet.getLong("id");
-            long id_user_from = resultSet.getLong("id_user_from");
-            String message = resultSet.getString("last_name");
+            long id_sender = resultSet.getLong("id_user_from");
+            String message = resultSet.getString("message");
             LocalDate date = resultSet.getDate("date").toLocalDate();
             LocalTime time = resultSet.getTime("time").toLocalTime();
             LocalDateTime dateTime = LocalDateTime.of(date, time);
             List<User> to = new ArrayList<>();
 
-            sql = "select * from from_to where id_user_from = ?";
+            //Get all conections to this message
+            sql = "select * from messages_users where id_message = ?";
             PreparedStatement pStatement = connection.prepareStatement(sql);
 
-            pStatement.setLong(1, id_user_from);
+            pStatement.setLong(1, id);
             resultSet = pStatement.executeQuery();
 
+
+            //Get "to" user list
             while (resultSet.next()){
-                Long id_user = resultSet.getLong("id_user");
-                String first_name = resultSet.getString("first_name");
-                String last_name = resultSet.getString("last_name");
+                String newSql = "select * from users where id_user = ?";
+                PreparedStatement userStatement = connection.prepareStatement(newSql);
+                userStatement.setLong(1, resultSet.getLong("id_reciever"));
+                ResultSet userResult = userStatement.executeQuery();
+                userResult.next();
+
+                Long id_user = userResult.getLong("id_user");
+                String first_name = userResult.getString("first_name");
+                String last_name = userResult.getString("last_name");
 
                 User user = new User(id_user, first_name, last_name);
-                to.add(user);
+                if(!to.contains(user)) to.add(user);
+
             }
 
+            //Get from user
             sql = "select * from users where id_user = ?";
             PreparedStatement prStatement = connection.prepareStatement(sql);
-            prStatement.setLong(1, id_user_from);
+            prStatement.setLong(1, id_sender);
             resultSet = prStatement.executeQuery();
-
             resultSet.next();
+
             Long id_user = resultSet.getLong("id_user");
             String first_name = resultSet.getString("first_name");
             String last_name = resultSet.getString("last_name");
@@ -91,48 +104,11 @@ public class SQLMessageRepository implements Repository<Long, Message> {
 
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement("select * from messages");
-
             ResultSet resultSet = statement.executeQuery()){
-            while(resultSet.next()){
 
+            while(resultSet.next()){
                 long id = resultSet.getLong("id");
                 messages.add(findOne(id));
-                /*long id_user_from = resultSet.getLong("id_user_from");
-                String message = resultSet.getString("last_name");
-                LocalDate date = resultSet.getDate("date").toLocalDate();
-                LocalTime time = resultSet.getTime("time").toLocalTime();
-                LocalDateTime dateTime = LocalDateTime.of(date, time);
-                List<User> to = new ArrayList<>();
-
-                String sql = "select * from from_to where id_user_from = ?";
-                PreparedStatement pStatement = connection.prepareStatement(sql);
-
-                pStatement.setLong(1, id_user_from);
-                ResultSet userResultSet = pStatement.executeQuery();
-
-                while (userResultSet.next()){
-                    Long id_user = resultSet.getLong("id_user");
-                    String first_name = resultSet.getString("first_name");
-                    String last_name = resultSet.getString("last_name");
-
-                    User user = new User(id_user, first_name, last_name);
-                    to.add(user);
-                }
-
-                sql = "select * from users where id_user = ?";
-                PreparedStatement prStatement = connection.prepareStatement(sql);
-                prStatement.setLong(1, id_user_from);
-                userResultSet = prStatement.executeQuery();
-
-                userResultSet.next();
-                Long id_user = resultSet.getLong("id_user");
-                String first_name = resultSet.getString("first_name");
-                String last_name = resultSet.getString("last_name");
-
-                User from = new User(id_user, first_name, last_name);
-
-                messages.add(new Message(id, from, to, message, dateTime));*/
-
             }
             return messages;
         }catch(SQLException e){
@@ -157,12 +133,14 @@ public class SQLMessageRepository implements Repository<Long, Message> {
 
             statement.executeUpdate();
 
-            //entity.getTo().stream().forEach();
             for(User u : entity.getTo()){
-                sql = "insert into from_to(id_user_from, id_user_to) values(?, ?)";
+                sql = "insert into messages_users(id_message, id_sender, id_reciever) values(?, ?, ?)";
                 PreparedStatement pStatement = connection.prepareStatement(sql);
-                pStatement.setLong(1, entity.getFrom().getId());
-                pStatement.setLong(2, u.getId());
+                pStatement.setLong(1, entity.getId());
+                pStatement.setLong(2, entity.getFrom().getId());
+                pStatement.setLong(3, u.getId());
+
+                pStatement.executeUpdate();
             }
         } catch (SQLException e) {
             e.printStackTrace();
