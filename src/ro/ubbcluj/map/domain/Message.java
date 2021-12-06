@@ -82,7 +82,7 @@ public class Message extends Entity<Long> {
     public String toStringSimplified(){
         return getMessage() + " [sent by: " +
                 getFrom().getFirstName() + " " + getFrom().getLastName() +
-                ", on: " + date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                + ']';
+                ", on: " + date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
+                (replyTo != null ? ", replyTo:" + replyTo.toStringSimplified() + "]" : "]");
     }
 }

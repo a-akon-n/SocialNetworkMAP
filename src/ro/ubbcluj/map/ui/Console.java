@@ -9,7 +9,6 @@ import ro.ubbcluj.map.service.MessageService;
 import ro.ubbcluj.map.service.Network;
 import ro.ubbcluj.map.service.UserService;
 
-import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -41,10 +40,10 @@ public class Console {
         System.out.println("5. Number of communities");
         System.out.println("6. Most sociable community");
         System.out.println("sn. Show network");
-        System.out.println("7. Add message");
+        System.out.println("7. Send message");
         System.out.println("8. Delete message");
-        System.out.println("sm. Show all messages");
         System.out.println("9. Reply to message");
+        System.out.println("sm. Show all messages");
         System.out.println("sc. Show conversation");
         /*TODO
         System.out.println("11. Send friend request");
@@ -237,6 +236,7 @@ public class Console {
         return id_user;
     }
 
+    //Message
     private void addMessage(){
         try{
             Map<Long, Long> ids = new HashMap<>();
@@ -282,7 +282,7 @@ public class Console {
     }
     private void showMessages(){
         try{
-            messageService.findAll().forEach(System.out::println);
+            messageService.findAll().forEach(id -> System.out.println(id.toStringSimplified()));
         }catch(ValidationException|IllegalArgumentException e){
             e.printStackTrace();
         }
@@ -325,7 +325,20 @@ public class Console {
             e.printStackTrace();
         }
     }
-    //TODO
-    private void showConversation(){}
+    private void showConversation(){
+        try{
+            System.out.println("Insert id of the first user: ");
+            Long id1 = input.nextLong();
+            System.out.println("Insert id of the second user: ");
+            Long id2 = input.nextLong();
+
+            List<Message> conversation = messageService.getConversation(id1, id2);
+
+            conversation.forEach(m -> System.out.println(m.toStringSimplified()));
+
+        } catch(IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
+    }
 
 }

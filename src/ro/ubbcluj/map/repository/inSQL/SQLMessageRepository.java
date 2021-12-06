@@ -10,9 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class SQLMessageRepository implements Repository<Long, Message> {
     private final String url;
@@ -112,10 +110,10 @@ public class SQLMessageRepository implements Repository<Long, Message> {
         return m;
     }
 
-        @Override
+    @Override
     public Iterable<Message> findAll() {
 
-        Set<Message> messages = new HashSet<>();
+        List<Message> messages = new ArrayList<>();
 
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement("select * from messages");
