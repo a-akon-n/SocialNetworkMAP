@@ -10,6 +10,7 @@ import ro.ubbcluj.map.service.Network;
 import ro.ubbcluj.map.service.UserService;
 
 import java.sql.SQLOutput;
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -46,6 +47,7 @@ public class Console {
         System.out.println("sm. Show all messages");
         System.out.println("9. Reply to message");
         System.out.println("sc. Show conversation");
+        System.out.println("suf. Show user's friends");
         /*TODO
         System.out.println("11. Send friend request");
         System.out.println("12. Delete friend request");
@@ -103,9 +105,32 @@ public class Console {
             else if(Objects.equals(command, "sc")){
                 showConversation();
             }
+            else if(Objects.equals(command, "suf")){
+                showUserFriends();
+            }
             else{
                 System.out.println("Invalid command, try again.");
             }
+        }
+    }
+
+    private void showUserFriends() {
+        try{
+            System.out.println("Insert the id of the user to show its friends: ");
+            Long id_user = input.nextLong();
+            for(Friendship friendship:friendshipService.findAll()){
+                if (Objects.equals(friendship.getUser1(), id_user)) {
+                    System.out.print(userService.findOne(friendship.getUser2()).getFirstName() + " | ");
+                    System.out.print(userService.findOne(friendship.getUser2()).getLastName() + " | ");
+                    System.out.println(friendship.getDate());
+                } else if (Objects.equals(friendship.getUser2(), id_user)) {
+                    System.out.print(userService.findOne(friendship.getUser1()).getFirstName() + " | ");
+                    System.out.print(userService.findOne(friendship.getUser1()).getLastName() + " | ");
+                    System.out.println(friendship.getDate());
+                }
+            }
+        }catch(IllegalArgumentException|InputMismatchException e){
+            e.printStackTrace();
         }
     }
 
@@ -164,8 +189,9 @@ public class Console {
             Long id_user1 = input.nextLong();
             System.out.println("Insert the id of the second user");
             Long id_user2 = input.nextLong();
+            Date date = new Date(System.currentTimeMillis());
 
-            Friendship friendship = new Friendship(id_friendship, id_user1, id_user2);
+            Friendship friendship = new Friendship(id_friendship, id_user1, id_user2, date);
             friendshipService.addEntity(friendship);
             networkAdjList.addEdge(friendship);
         }catch(ValidationException|IllegalArgumentException|InputMismatchException e){
