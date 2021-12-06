@@ -6,9 +6,8 @@ import ro.ubbcluj.map.repository.Repository;
 import java.util.Objects;
 
 public class UserService extends AbstractService<Long, User>{
-    public UserService(Repository<Long, User> userRepository) {
-        repository = userRepository;
-    }
+
+    public UserService(Repository<Long, User> repo) { repository = repo; }
 
     @Override
     public void addEntity(User entity) {

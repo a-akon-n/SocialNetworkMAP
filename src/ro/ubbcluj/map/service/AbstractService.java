@@ -7,9 +7,7 @@ import ro.ubbcluj.map.repository.Repository;
 public abstract class AbstractService<ID, E extends Entity<ID>> {
     public Repository<ID,E> repository;
 
-    public void addEntity(E entity){
-        repository.save(entity);
-    }
+    public void addEntity(E entity){ repository.save(entity);}
     public void deleteEntity(ID id){
         repository.delete(id);
     }

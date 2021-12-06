@@ -1,10 +1,13 @@
 package ro.ubbcluj.map;
 
 import ro.ubbcluj.map.domain.validators.FriendshipValidator;
+import ro.ubbcluj.map.domain.validators.MessageValidator;
 import ro.ubbcluj.map.domain.validators.UserValidator;
 import ro.ubbcluj.map.repository.inSQL.SQLFriendshipRepository;
+import ro.ubbcluj.map.repository.inSQL.SQLMessageRepository;
 import ro.ubbcluj.map.repository.inSQL.SQLUserRepository;
 import ro.ubbcluj.map.service.FriendshipService;
+import ro.ubbcluj.map.service.MessageService;
 import ro.ubbcluj.map.service.Network;
 import ro.ubbcluj.map.service.UserService;
 import ro.ubbcluj.map.ui.Console;
@@ -26,7 +29,11 @@ public class Main {
 
         Network network = new Network(userRepository, friendshipRepository);
 
-        Console userInterface = new Console(userService, friendshipService, network);
+        MessageValidator messageValidator = new MessageValidator();
+        SQLMessageRepository messageRepository = new SQLMessageRepository(messageValidator, url, username, password);
+        MessageService messageService = new MessageService(messageRepository);
+
+        Console userInterface = new Console(userService, friendshipService, network, messageService);
 
         userInterface.run_console();
     }

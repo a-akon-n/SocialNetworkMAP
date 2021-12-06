@@ -1,27 +1,35 @@
 package ro.ubbcluj.map.ui;
 
 import ro.ubbcluj.map.domain.Friendship;
+import ro.ubbcluj.map.domain.Message;
 import ro.ubbcluj.map.domain.User;
 import ro.ubbcluj.map.domain.validators.ValidationException;
 import ro.ubbcluj.map.service.FriendshipService;
+import ro.ubbcluj.map.service.MessageService;
 import ro.ubbcluj.map.service.Network;
 import ro.ubbcluj.map.service.UserService;
 
+import java.sql.SQLOutput;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Console {
     private final UserService userService;
     private final FriendshipService friendshipService;
     private final Network networkAdjList;
+    private final MessageService messageService;
     Scanner input = new Scanner(System.in);
 
-    public Console(UserService userService, FriendshipService friendshipService, Network network) {
+    public Console(UserService userService, FriendshipService friendshipService,
+                   Network network, MessageService messageService) {
         this.userService = userService;
         this.friendshipService = friendshipService;
         this.networkAdjList = network;
+        this.messageService = messageService;
     }
 
 
+    //Menu
     public static void menu(){
         System.out.println("-----------------------------MENU----------------------------------");
         System.out.println("1. Add user");
@@ -33,6 +41,16 @@ public class Console {
         System.out.println("5. Number of communities");
         System.out.println("6. Most sociable community");
         System.out.println("sn. Show network");
+        System.out.println("7. Add message");
+        System.out.println("8. Delete message");
+        System.out.println("sm. Show all messages");
+        System.out.println("9. Reply to message");
+        System.out.println("sc. Show conversation");
+        /*TODO
+        System.out.println("11. Send friend request");
+        System.out.println("12. Delete friend request");
+        System.out.println("sr. Show friend requests");
+        */
         System.out.println("x. Stop");
         System.out.println("-------------------------------------------------------------------");
     }
@@ -70,12 +88,28 @@ public class Console {
             else if(Objects.equals(command, "sn")){
                 showNetwork();
             }
+            else if(Objects.equals(command, "7")){
+                addMessage();
+            }
+            else if(Objects.equals(command, "8")){
+                deleteMessage();
+            }
+            else if(Objects.equals(command, "sm")){
+                showMessages();
+            }
+            else if(Objects.equals(command, "9")){
+                addReply();
+            }
+            else if(Objects.equals(command, "sc")){
+                showConversation();
+            }
             else{
                 System.out.println("Invalid command, try again.");
             }
         }
     }
 
+    //Network
     private void showNetwork() {
         Map<Long, List<Long>> network = networkAdjList.getAdjList();
         for(Long i = 1L; i <= userService.getNumberOf(); i++){
@@ -94,6 +128,7 @@ public class Console {
         System.out.println("The Number of communities in the network is: " + networkAdjList.no_ofComponents());
     }
 
+    //Friendship
     private void showFriendships() {
         try{
             for(Friendship friendship:friendshipService.findAll()){
@@ -138,6 +173,7 @@ public class Console {
         }
     }
 
+    //User
     private void showUsers() {
         try{
             for(User user:userService.findAll()){
@@ -172,6 +208,7 @@ public class Console {
                 ids.put(user.getId(), user.getId());
             }
             id_user = getNextId(ids, i, id_user);
+
             System.out.println("Insert the first name of the user.");
             String first_name = input.next();
             System.out.println("Insert the last name of the user.");
@@ -199,5 +236,96 @@ public class Console {
             id_user = (long) (size + 1);
         return id_user;
     }
+
+    private void addMessage(){
+        try{
+            Map<Long, Long> ids = new HashMap<>();
+            int i = 0;
+            Long id_message = null;
+            for(Message message:messageService.findAll()){
+                ids.put(message.getId(), message.getId());
+            }
+            id_message = getNextId(ids, i, id_message);
+
+            System.out.println("From (id): ");
+            Long fromId = Long.parseLong(input.next());
+            User from = userService.findOne(fromId);
+
+            System.out.println("To (id1,id2, ...): ");
+            String toString = input.next();
+            String[] stringIds = toString.split(",");
+            ArrayList<Long> toIds = new ArrayList<>();
+            Arrays.stream(stringIds).forEach(id -> toIds.add(Long.parseLong(id)));
+            List<User> to = new ArrayList<>();
+            toIds.forEach(id -> to.add(userService.findOne(id)));
+
+            System.out.println("Message: ");
+            String m = input.next();
+
+            LocalDateTime localDateTime = LocalDateTime.now();
+
+            Message message = new Message(id_message, from, to, m, localDateTime, null);
+            messageService.addEntity(message);
+
+        }catch(ValidationException|IllegalArgumentException| InputMismatchException e){
+            e.printStackTrace();
+        }
+    }
+    private void deleteMessage(){
+        try{
+            System.out.print("Insert the id of the message to delete from the database: ");
+            Long id_message = input.nextLong();
+            userService.deleteEntity(id_message);
+        }catch(ValidationException|IllegalArgumentException|InputMismatchException e){
+            e.printStackTrace();
+        }
+    }
+    private void showMessages(){
+        try{
+            messageService.findAll().forEach(System.out::println);
+        }catch(ValidationException|IllegalArgumentException e){
+            e.printStackTrace();
+        }
+    }
+    private void addReply(){
+        try{
+            Map<Long, Long> ids = new HashMap<>();
+            int i = 0;
+            Long id_message = null;
+            for(Message message:messageService.findAll()){
+                ids.put(message.getId(), message.getId());
+            }
+            id_message = getNextId(ids, i, id_message);
+
+            System.out.println("Reply to message with id: ");
+            Long replyId = input.nextLong();
+            Message replyTo = messageService.findOne(replyId);
+
+            System.out.println("From (id): ");
+            Long fromId = Long.parseLong(input.next());
+            User from = userService.findOne(fromId);
+
+            System.out.println("To (id1,id2, ...): ");
+            String toString = input.next();
+            String[] stringIds = toString.split(",");
+            ArrayList<Long> toIds = new ArrayList<>();
+            Arrays.stream(stringIds).forEach(id -> toIds.add(Long.parseLong(id)));
+            List<User> to = new ArrayList<>();
+            toIds.forEach(id -> to.add(userService.findOne(id)));
+
+            System.out.println("Message: ");
+            String m = input.next();
+
+            LocalDateTime localDateTime = LocalDateTime.now();
+
+            Message message = new Message(id_message, from, to, m, localDateTime, replyTo);
+            messageService.addEntity(message);
+
+        }catch(ValidationException|IllegalArgumentException| InputMismatchException e){
+            e.printStackTrace();
+        }
+    }
+    //TODO
+    private void showConversation(){}
 
 }

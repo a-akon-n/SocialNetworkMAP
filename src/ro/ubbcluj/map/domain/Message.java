@@ -1,6 +1,7 @@
 package ro.ubbcluj.map.domain;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,13 +10,15 @@ public class Message extends Entity<Long> {
     private List<User> to;
     private String message;
     private LocalDateTime date;
+    private Message replyTo;
 
-    public Message(Long id, User from, List<User> to, String message, LocalDateTime date){
+    public Message(Long id, User from, List<User> to, String message, LocalDateTime date, Message replyTo){
         super(id);
         this.from = from;
         this.to = to;
         this.message = message;
         this.date = date;
+        this.replyTo = replyTo;
     }
 
     public User getFrom() {
@@ -46,6 +49,10 @@ public class Message extends Entity<Long> {
         this.date = date;
     }
 
+    public Message getReplyTo() {
+        return replyTo;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,10 +69,20 @@ public class Message extends Entity<Long> {
     @Override
     public String toString() {
         return "Message{" +
-                "from=" + from +
+                "id=" + getId() +
+                ", from=" + from +
                 ", to=" + to +
-                ", message='" + message + '\'' +
-                ", date=" + date +
+                ", message='" + message +
+                ", date=" + date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
+                (replyTo != null ?
+                ", replyTo=[id=" + replyTo.getId() + " ,message=" + replyTo.getMessage() + "]" : "") +
                 '}';
+    }
+
+    public String toStringSimplified(){
+        return getMessage() + " [sent by: " +
+                getFrom().getFirstName() + " " + getFrom().getLastName() +
+                ", on: " + date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                + ']';
     }
 }
