@@ -54,7 +54,8 @@ public class FriendRequest extends Entity<Long>{
     @Override
     public String toString() {
         return "FriendRequest{" +
-                "id_from=" + from +
+                "id=" + getId() +
+                ", id_from=" + from +
                 ", id_to=" + to +
                 ", status='" + status + '\'' +
                 '}';

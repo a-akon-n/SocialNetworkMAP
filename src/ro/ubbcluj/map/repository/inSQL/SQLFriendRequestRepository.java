@@ -35,7 +35,7 @@ public class SQLFriendRequestRepository implements Repository<Long, FriendReques
             resultSet.next();
 
             Long id = resultSet.getLong("id");
-            Long from = resultSet.getLong("id_form");
+            Long from = resultSet.getLong("id_from");
             Long to = resultSet.getLong("id_to");
             String status = resultSet.getString("status");
 
@@ -57,7 +57,7 @@ public class SQLFriendRequestRepository implements Repository<Long, FriendReques
 
             while(resultSet.next()){
                 Long id = resultSet.getLong("id");
-                Long from = resultSet.getLong("id_form");
+                Long from = resultSet.getLong("id_from");
                 Long to = resultSet.getLong("id_to");
                 String status = resultSet.getString("status");
 
@@ -71,15 +71,14 @@ public class SQLFriendRequestRepository implements Repository<Long, FriendReques
 
     @Override
     public void save(FriendRequest entity) {
-        String sql = "insert into friend_requests(id, id_from, id_to, status) values(?, ?, ?, ?)";
+        String sql = "insert into friend_requests(id_from, id_to, status) values(?, ?, ?)";
         validator.validate(entity);
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)){
 
-            statement.setLong(1, entity.getId());
-            statement.setLong(2, entity.getFrom());
-            statement.setLong(3, entity.getTo());
-            statement.setString(4, entity.getStatus());
+            statement.setLong(1, entity.getFrom());
+            statement.setLong(2, entity.getTo());
+            statement.setString(3, entity.getStatus());
 
             statement.executeUpdate();
         } catch (SQLException e) {

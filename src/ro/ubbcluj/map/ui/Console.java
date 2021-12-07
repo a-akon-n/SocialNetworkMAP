@@ -1,15 +1,14 @@
 package ro.ubbcluj.map.ui;
 
+import ro.ubbcluj.map.domain.FriendRequest;
 import ro.ubbcluj.map.domain.Friendship;
 import ro.ubbcluj.map.domain.Message;
 import ro.ubbcluj.map.domain.User;
 import ro.ubbcluj.map.domain.validators.ValidationException;
-import ro.ubbcluj.map.service.FriendshipService;
-import ro.ubbcluj.map.service.MessageService;
-import ro.ubbcluj.map.service.Network;
-import ro.ubbcluj.map.service.UserService;
+import ro.ubbcluj.map.service.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -18,14 +17,16 @@ public class Console {
     private final FriendshipService friendshipService;
     private final Network networkAdjList;
     private final MessageService messageService;
+    private final FriendRequestService friendRequestService;
     Scanner input = new Scanner(System.in);
 
-    public Console(UserService userService, FriendshipService friendshipService,
-                   Network network, MessageService messageService) {
+    public Console(UserService userService, FriendshipService friendshipService, Network network,
+                   MessageService messageService, FriendRequestService friendRequestService) {
         this.userService = userService;
         this.friendshipService = friendshipService;
         this.networkAdjList = network;
         this.messageService = messageService;
+        this.friendRequestService = friendRequestService;
     }
 
 
@@ -47,12 +48,11 @@ public class Console {
         System.out.println("sm. Show all messages");
         System.out.println("sc. Show conversation");
         System.out.println("suf. Show user's friends");
-        /*TODO
-        System.out.println("11. Send friend request");
-        System.out.println("12. Delete friend request");
-        System.out.println("sr. Show friend requests");
+        System.out.println("10. Send friend request");
+        System.out.println("11. Delete friend request");
+        System.out.println("sur. Show friend requests of a user");
+        System.out.println("sar. Show all friend requests");
         System.out.println("rr. Resolve friend requests");
-        */
         System.out.println("x. Stop");
         System.out.println("-------------------------------------------------------------------");
     }
@@ -107,6 +107,21 @@ public class Console {
             }
             else if(Objects.equals(command, "suf")){
                 showUserFriends();
+            }
+            else if(Objects.equals(command, "10")){
+                sendRequest();
+            }
+            else if(Objects.equals(command, "11")){
+                deleteRequest();
+            }
+            else if(Objects.equals(command, "sur")){
+                getRequests();
+            }
+            else if(Objects.equals(command, "sar")){
+                getAllRequests();
+            }
+            else if(Objects.equals(command, "rr")){
+                resolveRequest();
             }
             else{
                 System.out.println("Invalid command, try again.");
@@ -287,7 +302,7 @@ public class Console {
             toIds.forEach(id -> to.add(userService.findOne(id)));
 
             System.out.println("Message: ");
-            String m = input.next();
+            String m = input.nextLine();
 
             LocalDateTime localDateTime = LocalDateTime.now();
 
@@ -341,7 +356,7 @@ public class Console {
             toIds.forEach(id -> to.add(userService.findOne(id)));
 
             System.out.println("Message: ");
-            String m = input.next();
+            String m = input.nextLine();
 
             LocalDateTime localDateTime = LocalDateTime.now();
 
@@ -365,6 +380,84 @@ public class Console {
 
         } catch(IllegalArgumentException e){
             System.out.println(e.getMessage());
+        }
+    }
+
+    //Friend requests
+    private void sendRequest(){
+        try {
+            System.out.println("Insert the id of the user sending the request: ");
+            Long from = input.nextLong();
+
+            System.out.println("Insert the id of the user recieving the request: ");
+            Long to = input.nextLong();
+
+            friendRequestService.addEntity(new FriendRequest(0L, from, to, "pending"));
+        } catch(ValidationException | IllegalArgumentException | InputMismatchException e){
+            e.printStackTrace();
+        }
+    }
+    private void deleteRequest(){
+        try {
+            System.out.println("Insert id of the request: ");
+            friendRequestService.deleteEntity(input.nextLong());
+        } catch(ValidationException | IllegalArgumentException | InputMismatchException e){
+            e.printStackTrace();
+        }
+    }
+    private void getRequests(){
+        try{
+            System.out.println("Insert the id of a user: ");
+            List<FriendRequest> all = friendRequestService.getRequestsOf(input.nextLong());
+            all.forEach(System.out::println);
+        } catch(ValidationException | IllegalArgumentException | InputMismatchException e){
+            e.printStackTrace();
+        }
+
+    }
+    private void getAllRequests(){
+        try {
+            friendRequestService.findAll().forEach(System.out::println);
+        } catch(ValidationException | IllegalArgumentException | InputMismatchException e){
+            e.printStackTrace();
+        }
+    }
+    private void resolveRequest(){
+        try {
+            System.out.println("Inert the id of the request: ");
+            Long id = input.nextLong();
+
+            System.out.println("Accept or reject? (a/r): ");
+            String action = input.next();
+
+            FriendRequest fr = friendRequestService.findOne(id);
+
+            if (Objects.equals(action, "a")) {
+                friendRequestService.updateRequestStatus(id, "approved");
+
+                Map<Long, Long> ids = new HashMap<>();
+                int i = 0;
+                Long id_friendship = null;
+                for(Friendship friendship: friendshipService.findAll()){
+                    ids.put(friendship.getId(), friendship.getId());
+                }
+                id_friendship = getNextId(ids, i, id_friendship);
+
+                friendshipService.addEntity(
+                        new Friendship(
+                                id_friendship, fr.getFrom(), fr.getTo(),
+                                Date.valueOf(LocalDate.now()
+                                )
+                        )
+                );
+
+            } else if (Objects.equals(action, "r")) {
+                friendRequestService.updateRequestStatus(id, "rejected");
+            } else {
+                System.out.println("Wrong option!");
+            }
+        } catch(ValidationException | IllegalArgumentException | InputMismatchException e) {
+            e.printStackTrace();
         }
     }
 
