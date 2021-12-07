@@ -5,6 +5,7 @@ import ro.ubbcluj.map.domain.validators.Validator;
 import ro.ubbcluj.map.repository.Repository;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,8 +37,9 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
             Long id = resultSet.getLong("id_friendship");
             Long id_user1 = resultSet.getLong("id_user1");
             Long id_user2 = resultSet.getLong("id_user2");
+            Date date = resultSet.getDate("date");
 
-            friendship = new Friendship(id, id_user1, id_user2);
+            friendship = new Friendship(id, id_user1, id_user2, date);
             return friendship;
         } catch(SQLException e){
             e.printStackTrace();
@@ -57,8 +59,9 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
                 Long id = resultSet.getLong("id_friendship");
                 Long id_user1 = resultSet.getLong("id_user1");
                 Long id_user2 = resultSet.getLong("id_user2");
+                Date date = resultSet.getDate("date");
 
-                Friendship friendship = new Friendship(id, id_user1, id_user2);
+                Friendship friendship = new Friendship(id, id_user1, id_user2, date);
 
                 friendships.add(friendship);
             }
@@ -71,7 +74,7 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
 
     @Override
     public void save(Friendship entity) {
-        String sql = "insert into friendships(id_friendship, id_user1, id_user2) values(?, ?, ?)";
+        String sql = "insert into friendships(id_friendship, id_user1, id_user2, date) values(?, ?, ?, ?)";
         validator.validate(entity);
 
         try(Connection connection = DriverManager.getConnection(url, username, password);
@@ -80,6 +83,7 @@ public class SQLFriendshipRepository implements Repository<Long, Friendship> {
             statement.setInt(1, entity.getId().intValue());
             statement.setInt(2, entity.getUser1().intValue());
             statement.setInt(3, entity.getUser2().intValue());
+            statement.setDate(4, entity.getDate());
 
             statement.executeUpdate();
 

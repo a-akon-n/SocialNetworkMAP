@@ -1,15 +1,23 @@
 package ro.ubbcluj.map.domain;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 public class Friendship extends Entity<Long>{
     private Long user1;
     private Long user2;
+    private Date date;
 
-    public Friendship(Long a, Long user1, Long user2) {
-        super(a);
+    public Date getDate() {
+        return date;
+    }
+
+    public Friendship(Long aLong, Long user1, Long user2, Date date) {
+        super(aLong);
         this.user1 = user1;
         this.user2 = user2;
+        this.date = date;
     }
 
     public Long getUser1() {
