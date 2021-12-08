@@ -119,13 +119,21 @@ public class Console {
             System.out.println("Insert the id of the user to show its friends: ");
             Long id_user = input.nextLong();
             List<Friendship> friendships = new ArrayList<>();
-            for(Friendship friendship:friendshipService.findAll()){
-                friendships.add(friendship);
-            }
+            friendshipService.findAll().forEach(friendships::add);
             friendships
                     .stream()
-                    .filter(x->x.getUser1().equals(id_user) || x.getUser2().equals(id_user))
-                    .forEach(System.out::println);
+                    .filter(x->x.getUser1().equals(id_user))
+                    .forEach(friendship -> System.out.println(userService.findOne(friendship.getUser2()).getLastName() + " | "
+                            + userService.findOne(friendship.getUser2()).getFirstName() + " | "
+                            + friendship.getDate()
+                    ));
+            friendships
+                    .stream()
+                    .filter(x->x.getUser2().equals(id_user))
+                    .forEach(friendship -> System.out.println(userService.findOne(friendship.getUser1()).getLastName() + " | "
+                            + userService.findOne(friendship.getUser1()).getFirstName() + " | "
+                            + friendship.getDate()
+                    ));
         }catch(IllegalArgumentException|InputMismatchException e){
             e.printStackTrace();
         }
