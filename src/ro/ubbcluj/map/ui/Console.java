@@ -327,12 +327,13 @@ public class Console {
             }
             id_message = getNextId(ids, i, id_message);
 
-            System.out.println("From (id): ");
+            System.out.println("Message from (id): ");
             Long fromId = Long.parseLong(input.next());
             User from = userService.findOne(fromId);
 
-            System.out.println("To (id1,id2, ...): ");
+            System.out.println("To users (id1,id2, ...): ");
             String toString = input.next();
+            input.nextLine();
             String[] stringIds = toString.split(",");
             ArrayList<Long> toIds = new ArrayList<>();
             Arrays.stream(stringIds).forEach(id -> toIds.add(Long.parseLong(id)));
@@ -355,14 +356,14 @@ public class Console {
         try{
             System.out.print("Insert the id of the message to delete from the database: ");
             Long id_message = input.nextLong();
-            userService.deleteEntity(id_message);
+            messageService.deleteEntity(id_message);
         }catch(ValidationException|IllegalArgumentException|InputMismatchException e){
             e.printStackTrace();
         }
     }
     private void showMessages(){
         try{
-            messageService.findAll().forEach(id -> System.out.println(id.toStringSimplified()));
+            messageService.findAll().forEach(id -> System.out.println(id.getId() + ":" + id.toStringSimplified()));
         }catch(ValidationException|IllegalArgumentException e){
             e.printStackTrace();
         }
@@ -380,18 +381,15 @@ public class Console {
             System.out.println("Reply to message with id: ");
             Long replyId = input.nextLong();
             Message replyTo = messageService.findOne(replyId);
+            System.out.print("-> Replying to message: \n" + replyTo.toStringSimplified() + "\n");
 
-            System.out.println("From (id): ");
+            System.out.println("-> From (id): ");
             Long fromId = Long.parseLong(input.next());
+            input.nextLine();
             User from = userService.findOne(fromId);
 
-            System.out.println("To (id1,id2, ...): ");
-            String toString = input.next();
-            String[] stringIds = toString.split(",");
-            ArrayList<Long> toIds = new ArrayList<>();
-            Arrays.stream(stringIds).forEach(id -> toIds.add(Long.parseLong(id)));
             List<User> to = new ArrayList<>();
-            toIds.forEach(id -> to.add(userService.findOne(id)));
+            to.add(userService.findOne(replyTo.getFrom().getId()));
 
             System.out.println("Message: ");
             String m = input.nextLine();
@@ -427,7 +425,7 @@ public class Console {
             System.out.println("Insert the id of the user sending the request: ");
             Long from = input.nextLong();
 
-            System.out.println("Insert the id of the user recieving the request: ");
+            System.out.println("Insert the id of the user receiving the request: ");
             Long to = input.nextLong();
 
             friendRequestService.addEntity(new FriendRequest(0L, from, to, "pending"));
