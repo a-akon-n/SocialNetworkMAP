@@ -17,7 +17,7 @@ public class FriendRequestService extends AbstractService<Long, FriendRequest>{
     public List<FriendRequest> getRequestsOf(Long id){
         return ((List<FriendRequest>) findAll())
                 .stream()
-                .filter(fr -> Objects.equals(fr.getTo(), id))
+                .filter(fr -> Objects.equals(fr.getTo(), id) || Objects.equals(fr.getFrom(), id))
                 .collect(Collectors.toList());
     }
 
