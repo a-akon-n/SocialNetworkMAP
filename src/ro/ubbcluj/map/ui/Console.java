@@ -7,6 +7,9 @@ import ro.ubbcluj.map.domain.User;
 import ro.ubbcluj.map.domain.validators.ValidationException;
 import ro.ubbcluj.map.service.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -423,14 +426,15 @@ public class Console {
             toIds.forEach(id -> to.add(userService.findOne(id)));
 
             System.out.println("Message: ");
-            String m = input.nextLine();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String m = reader.readLine();
 
             LocalDateTime localDateTime = LocalDateTime.now();
 
             Message message = new Message(id_message, from, to, m, localDateTime, null);
             messageService.addEntity(message);
 
-        }catch(ValidationException|IllegalArgumentException| InputMismatchException e){
+        }catch(ValidationException | IllegalArgumentException | InputMismatchException | IOException e){
             e.printStackTrace();
         }
     }
@@ -445,7 +449,7 @@ public class Console {
     }
     private void showMessages(){
         try{
-            messageService.findAll().forEach(id -> System.out.println(id.getId() + ":" + id.toStringSimplified()));
+            messageService.findAll().forEach(id -> System.out.println(id.getId() + ":" + id.toStringSimplified()));         
         }catch(ValidationException|IllegalArgumentException e){
             e.printStackTrace();
         }
@@ -474,14 +478,15 @@ public class Console {
             to.add(userService.findOne(replyTo.getFrom().getId()));
 
             System.out.println("Message: ");
-            String m = input.nextLine();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String m = reader.readLine();
 
             LocalDateTime localDateTime = LocalDateTime.now();
 
             Message message = new Message(id_message, from, to, m, localDateTime, replyTo);
             messageService.addEntity(message);
 
-        }catch(ValidationException|IllegalArgumentException| InputMismatchException e){
+        }catch(ValidationException | IllegalArgumentException | InputMismatchException | IOException e){
             e.printStackTrace();
         }
     }
@@ -492,9 +497,11 @@ public class Console {
             System.out.println("Insert id of the second user: ");
             Long id2 = input.nextLong();
 
-            List<Message> conversation = messageService.getConversation(id1, id2);
+            //List<Message> conversation = messageService.getConversation(id1, id2);
 
-            conversation.forEach(m -> System.out.println(m.toStringSimplified()));
+            messageService
+                    .getConversation(id1, id2)
+                    .forEach(m -> System.out.println(m.toStringSimplified()));
 
         } catch(IllegalArgumentException e){
             System.out.println(e.getMessage());
@@ -526,8 +533,8 @@ public class Console {
     private void getRequests(){
         try{
             System.out.println("Insert the id of a user: ");
-            List<FriendRequest> all = friendRequestService.getRequestsOf(input.nextLong());
-            all.forEach(System.out::println);
+            //List<FriendRequest> all = friendRequestService.getRequestsOf(input.nextLong());
+            friendRequestService.getRequestsOf(input.nextLong()).forEach(System.out::println);
         } catch(ValidationException | IllegalArgumentException | InputMismatchException e){
             e.printStackTrace();
         }
