@@ -121,15 +121,6 @@ public class Console {
             List<Friendship> friendships = new ArrayList<>();
             for(Friendship friendship:friendshipService.findAll()){
                 friendships.add(friendship);
-//                if (Objects.equals(friendship.getUser1(), id_user)) {
-//                    System.out.print(userService.findOne(friendship.getUser2()).getFirstName() + " | ");
-//                    System.out.print(userService.findOne(friendship.getUser2()).getLastName() + " | ");
-//                    System.out.println(friendship.getDate());
-//                } else if (Objects.equals(friendship.getUser2(), id_user)) {
-//                    System.out.print(userService.findOne(friendship.getUser1()).getFirstName() + " | ");
-//                    System.out.print(userService.findOne(friendship.getUser1()).getLastName() + " | ");
-//                    System.out.println(friendship.getDate());
-//                }
             }
             friendships
                     .stream()
