@@ -29,106 +29,188 @@ public class Console {
         this.friendRequestService = friendRequestService;
     }
 
-
     //Menu
-    public static void menu(){
+    public static void Menu(){
         System.out.println("-----------------------------MENU----------------------------------");
+        System.out.println("1. User");
+        System.out.println("2. Friendship");
+        System.out.println("3. Message");
+        System.out.println("4. Friend Requests");
+        System.out.println("5. Functions");
+        System.out.println("x. Exit");
+        System.out.println("-------------------------------------------------------------------");
+    }
+
+    //User Menu
+    public static void userMenu(){
+        System.out.println("-----------------------------USER----------------------------------");
         System.out.println("1. Add user");
         System.out.println("2. Delete user");
         System.out.println("su. Show all users");
-        System.out.println("3. Add friendship");
-        System.out.println("4. Delete friendship");
+        System.out.println("x. Back");
+        System.out.println("-------------------------------------------------------------------");
+    }
+
+    //Friendship Menu
+    public static void friendshipMenu(){
+        System.out.println("--------------------------FRIENDSHIP-------------------------------");
+        System.out.println("1. Add friendship");
+        System.out.println("2. Delete friendship");
         System.out.println("sf. Show all friendships");
-        System.out.println("5. Number of communities");
-        System.out.println("6. Most sociable community");
-        System.out.println("sn. Show network");
-        System.out.println("7. Send message");
-        System.out.println("8. Delete message");
-        System.out.println("9. Reply to message");
+        System.out.println("x. Back");
+        System.out.println("-------------------------------------------------------------------");
+    }
+
+    //Message Menu
+    public static void messageMenu(){
+        System.out.println("---------------------------MESSAGE--------------------------------");
+        System.out.println("1. Send message");
+        System.out.println("2. Delete message");
+        System.out.println("3. Reply to message");
         System.out.println("sm. Show all messages");
-        System.out.println("sc. Show conversation");
-        System.out.println("suf. Show user's friends");
-        System.out.println("sufm. Show user's friends by month");
-        System.out.println("10. Send friend request");
-        System.out.println("11. Delete friend request");
-        System.out.println("sur. Show friend requests of a user");
-        System.out.println("sar. Show all friend requests");
+        System.out.println("sc. Show conversation between 2 users");
+        System.out.println("su. Show all users");
+        System.out.println("x. Back");
+        System.out.println("-------------------------------------------------------------------");
+    }
+
+    //Request Menu
+    public static void requestMenu(){
+        System.out.println("---------------------------REQUEST--------------------------------");
+        System.out.println("1. Send friend request");
+        System.out.println("2. Delete friend request");
+        System.out.println("sr. Show all friend requests");
+        System.out.println("sur. Show an user's friend request");
         System.out.println("rr. Resolve friend requests");
-        System.out.println("x. Stop");
+        System.out.println("su. Show all users");
+        System.out.println("x. Back");
+        System.out.println("-------------------------------------------------------------------");
+    }
+
+    //Functions Menu
+    public static void functionMenu(){
+        System.out.println("--------------------------FUNCTIONS-------------------------------");
+        System.out.println("1. Number of communities");
+        System.out.println("2. Most sociable community");
+        System.out.println("3. Show user's friends");
+        System.out.println("4. Show user's friends by month");
+        System.out.println("su/sf/sm. Show all users/friendships/messages");
+        System.out.println("sn. Show network");
+        System.out.println("x. Back");
         System.out.println("-------------------------------------------------------------------");
     }
 
     public void run_console(){
-        while(true){
-            menu();
-            System.out.println("Insert command: ");
-            String command = input.next();
-            if(Objects.equals(command, "x")) break;
-            else if(Objects.equals(command, "1")){
-                addUser();
+        String command;
+        boolean repeat = true;
+        while(repeat){
+            Menu();
+            System.out.print("Insert command: ");
+            command = input.next();
+            switch (command) {
+                case "1" -> run_User();
+                case "2" -> run_Friendship();
+                case "3" -> run_Messages();
+                case "4" -> run_Requests();
+                case "5" -> run_Functions();
+                case "x" -> repeat = false;
+                default -> System.out.println("Invalid command, try again.");
             }
-            else if(Objects.equals(command, "2")){
-                deleteUser();
+        }
+    }
+
+    private void run_Functions() {
+        String command;
+        boolean repeat = true;
+        while(repeat){
+            functionMenu();
+            System.out.print("Insert command: ");
+            command = input.next();
+            switch (command) {
+                case "1" -> numberOfCommunities();
+                case "2" -> mostSociableCommunity();
+                case "3" -> showUserFriends();
+                case "4" -> showUserFriendsMonth();
+                case "su" -> showUsers();
+                case "sf" -> showFriendships();
+                case "sm" -> showMessages();
+                case "sn" -> showNetwork();
+                case "x" -> repeat = false;
+                default -> System.out.println("Invalid command, try again.");
             }
-            else if(Objects.equals(command, "su")){
-                showUsers();
+        }
+    }
+
+    private void run_Requests() {
+        String command;
+        boolean repeat = true;
+        while(repeat){
+            requestMenu();
+            System.out.print("Insert command: ");
+            command = input.next();
+            switch (command) {
+                case "1" -> sendRequest();
+                case "2" -> deleteRequest();
+                case "sr" -> getAllRequests();
+                case "sur" -> getRequests();
+                case "rr" -> resolveRequest();
+                case "su" -> showUsers();
+                case "x" -> repeat = false;
+                default -> System.out.println("Invalid command, try again.");
             }
-            else if(Objects.equals(command, "3")){
-                addFriendship();
+        }
+    }
+
+    private void run_Messages() {
+        String command;
+        boolean repeat = true;
+        while(repeat){
+            messageMenu();
+            System.out.print("Insert command: ");
+            command = input.next();
+            switch (command) {
+                case "1" -> addMessage();
+                case "2" -> deleteMessage();
+                case "3" -> addReply();
+                case "sm" -> showMessages();
+                case "sc" -> showConversation();
+                case "su" -> showUsers();
+                case "x" -> repeat = false;
+                default -> System.out.println("Invalid command, try again.");
             }
-            else if(Objects.equals(command, "4")){
-                deleteFriendship();
+        }
+    }
+
+    private void run_Friendship() {
+        String command;
+        boolean repeat = true;
+        while(repeat){
+            friendshipMenu();
+            System.out.print("Insert command: ");
+            command = input.next();
+            switch (command) {
+                case "1" -> addFriendship();
+                case "2" -> deleteFriendship();
+                case "sf" -> showFriendships();
+                case "x" -> repeat = false;
+                default -> System.out.println("Invalid command, try again.");
             }
-            else if(Objects.equals(command, "sf")){
-                showFriendships();
-            }
-            else if(Objects.equals(command, "5")){
-                numberOfCommunities();
-            }
-            else if(Objects.equals(command, "6")){
-                mostSociableCommunity();
-            }
-            else if(Objects.equals(command, "sn")){
-                showNetwork();
-            }
-            else if(Objects.equals(command, "7")){
-                addMessage();
-            }
-            else if(Objects.equals(command, "8")){
-                deleteMessage();
-            }
-            else if(Objects.equals(command, "sm")){
-                showMessages();
-            }
-            else if(Objects.equals(command, "9")){
-                addReply();
-            }
-            else if(Objects.equals(command, "sc")){
-                showConversation();
-            }
-            else if(Objects.equals(command, "suf")){
-                showUserFriends();
-            }
-            else if(Objects.equals(command, "sufm")){
-                showUserFriendsMonth();
-            }
-            else if(Objects.equals(command, "10")){
-                sendRequest();
-            }
-            else if(Objects.equals(command, "11")){
-                deleteRequest();
-            }
-            else if(Objects.equals(command, "sur")){
-                getRequests();
-            }
-            else if(Objects.equals(command, "sar")){
-                getAllRequests();
-            }
-            else if(Objects.equals(command, "rr")){
-                resolveRequest();
-            }
-            else{
-                System.out.println("Invalid command, try again.");
+        }
+    }
+
+    private void run_User() {
+        String command;
+        boolean repeat = true;
+        while(repeat){
+            userMenu();
+            System.out.print("Insert command: ");
+            command = input.next();
+            switch (command) {
+                case "1" -> addUser();
+                case "2" -> deleteUser();
+                case "su" -> showUsers();
+                case "x" -> repeat = false;
+                default -> System.out.println("Invalid command, try again.");
             }
         }
     }
