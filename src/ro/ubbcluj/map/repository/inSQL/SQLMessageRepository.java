@@ -74,7 +74,7 @@ public class SQLMessageRepository implements Repository<Long, Message> {
             while (resultSet.next()){
                 String newSql = "select * from users where id_user = ?";
                 PreparedStatement userStatement = connection.prepareStatement(newSql);
-                userStatement.setLong(1, resultSet.getLong("id_reciever"));
+                userStatement.setLong(1, resultSet.getLong("id_receiver"));
                 ResultSet userResult = userStatement.executeQuery();
                 userResult.next();
 
