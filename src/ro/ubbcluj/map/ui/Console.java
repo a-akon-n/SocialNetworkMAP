@@ -32,7 +32,6 @@ public class Console {
         this.friendRequestService = friendRequestService;
     }
 
-
     //Menu
     public static void menu(){
         System.out.println("-----------------------------MENU----------------------------------");

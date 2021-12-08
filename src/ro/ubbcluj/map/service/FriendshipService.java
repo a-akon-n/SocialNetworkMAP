@@ -13,7 +13,9 @@ public class FriendshipService extends AbstractService<Long, Friendship> {
     @Override
     public void addEntity(Friendship entity) {
         for(Friendship friendship:repository.findAll()){
-            if(Objects.equals(friendship.getUser1(), entity.getUser1()) && Objects.equals(friendship.getUser2(), entity.getUser2())){
+            if(Objects.equals(friendship.getUser1(), entity.getUser1())
+                    && Objects.equals(friendship.getUser2(), entity.getUser2()) ||
+                    Objects.equals(friendship.getUser1(), entity.getUser2()) && Objects.equals(friendship.getUser2(), entity.getUser1())){
                 throw new IllegalArgumentException("Entitatea deja exista!");
             }
         }
