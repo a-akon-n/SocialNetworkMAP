@@ -11,12 +11,17 @@ import ro.ubbcluj.map.repository.inSQL.SQLUserRepository;
 import ro.ubbcluj.map.service.*;
 import ro.ubbcluj.map.ui.Console;
 
+import java.util.Scanner;
+
 public class Main {
 
     public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+
         String url = "jdbc:postgresql://localhost:5432/social_network";
         String username = "postgres";
-        String password = "postgre";
+        String password = input.next();
+        input.nextLine();
 
         UserValidator userValidator = new UserValidator();
         SQLUserRepository userRepository = new SQLUserRepository(userValidator, url, username, password);
