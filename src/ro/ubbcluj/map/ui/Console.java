@@ -48,6 +48,7 @@ public class Console {
         System.out.println("sm. Show all messages");
         System.out.println("sc. Show conversation");
         System.out.println("suf. Show user's friends");
+        System.out.println("sufm. Show user's friends by month");
         System.out.println("10. Send friend request");
         System.out.println("11. Delete friend request");
         System.out.println("sur. Show friend requests of a user");
@@ -108,6 +109,9 @@ public class Console {
             else if(Objects.equals(command, "suf")){
                 showUserFriends();
             }
+            else if(Objects.equals(command, "sufm")){
+                showUserFriendsMonth();
+            }
             else if(Objects.equals(command, "10")){
                 sendRequest();
             }
@@ -126,6 +130,35 @@ public class Console {
             else{
                 System.out.println("Invalid command, try again.");
             }
+        }
+    }
+
+    private void showUserFriendsMonth() {
+        try{
+            System.out.println("Insert the if of the user to show its friends: ");
+            Long id_user = input.nextLong();
+            System.out.println("Insert the month of the friendship: ");
+            String month = input.next();
+            List<Friendship> friendships = new ArrayList<>();
+            friendshipService.findAll().forEach(friendships::add);
+            friendships
+                    .stream()
+                    .filter(x->Objects.equals(x.getDate().toString().split("-")[1], month))
+                    .filter(x->x.getUser1().equals(id_user))
+                    .forEach(friendship -> System.out.println(userService.findOne(friendship.getUser2()).getLastName() + " | "
+                            + userService.findOne(friendship.getUser2()).getFirstName() + " | "
+                            + friendship.getDate()
+                    ));
+            friendships
+                    .stream()
+                    .filter(x->Objects.equals(x.getDate().toString().split("-")[1], month))
+                    .filter(x->x.getUser2().equals(id_user))
+                    .forEach(friendship -> System.out.println(userService.findOne(friendship.getUser1()).getLastName() + " | "
+                            + userService.findOne(friendship.getUser1()).getFirstName() + " | "
+                            + friendship.getDate()
+                    ));
+        }catch(IllegalArgumentException|InputMismatchException e){
+            e.printStackTrace();
         }
     }
 
