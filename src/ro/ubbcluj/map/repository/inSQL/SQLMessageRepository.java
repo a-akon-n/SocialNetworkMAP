@@ -152,7 +152,7 @@ public class SQLMessageRepository implements Repository<Long, Message> {
             statement.executeUpdate();
 
             for(User u : entity.getTo()){
-                sql = "insert into messages_users(id_message, id_sender, id_reciever) values(?, ?, ?)";
+                sql = "insert into messages_users(id_message, id_sender, id_receiver) values(?, ?, ?)";
                 PreparedStatement pStatement = connection.prepareStatement(sql);
                 pStatement.setLong(1, entity.getId());
                 pStatement.setLong(2, entity.getFrom().getId());
