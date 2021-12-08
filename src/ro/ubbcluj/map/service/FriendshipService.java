@@ -16,7 +16,7 @@ public class FriendshipService extends AbstractService<Long, Friendship> {
             if(Objects.equals(friendship.getUser1(), entity.getUser1())
                     && Objects.equals(friendship.getUser2(), entity.getUser2()) ||
                     Objects.equals(friendship.getUser1(), entity.getUser2()) && Objects.equals(friendship.getUser2(), entity.getUser1())){
-                throw new IllegalArgumentException("Entitatea deja exista!");
+                throw new IllegalArgumentException("Relatia de prietenie deja exista!");
             }
         }
         super.addEntity(entity);
