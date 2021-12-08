@@ -118,17 +118,23 @@ public class Console {
         try{
             System.out.println("Insert the id of the user to show its friends: ");
             Long id_user = input.nextLong();
+            List<Friendship> friendships = new ArrayList<>();
             for(Friendship friendship:friendshipService.findAll()){
-                if (Objects.equals(friendship.getUser1(), id_user)) {
-                    System.out.print(userService.findOne(friendship.getUser2()).getFirstName() + " | ");
-                    System.out.print(userService.findOne(friendship.getUser2()).getLastName() + " | ");
-                    System.out.println(friendship.getDate());
-                } else if (Objects.equals(friendship.getUser2(), id_user)) {
-                    System.out.print(userService.findOne(friendship.getUser1()).getFirstName() + " | ");
-                    System.out.print(userService.findOne(friendship.getUser1()).getLastName() + " | ");
-                    System.out.println(friendship.getDate());
-                }
+                friendships.add(friendship);
+//                if (Objects.equals(friendship.getUser1(), id_user)) {
+//                    System.out.print(userService.findOne(friendship.getUser2()).getFirstName() + " | ");
+//                    System.out.print(userService.findOne(friendship.getUser2()).getLastName() + " | ");
+//                    System.out.println(friendship.getDate());
+//                } else if (Objects.equals(friendship.getUser2(), id_user)) {
+//                    System.out.print(userService.findOne(friendship.getUser1()).getFirstName() + " | ");
+//                    System.out.print(userService.findOne(friendship.getUser1()).getLastName() + " | ");
+//                    System.out.println(friendship.getDate());
+//                }
             }
+            friendships
+                    .stream()
+                    .filter(x->x.getUser1().equals(id_user) || x.getUser2().equals(id_user))
+                    .forEach(System.out::println);
         }catch(IllegalArgumentException|InputMismatchException e){
             e.printStackTrace();
         }
