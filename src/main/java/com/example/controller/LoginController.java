@@ -31,9 +31,17 @@ public class LoginController {
         if(service.passwordIsValid(new Login(Long.parseLong(userId), password))){
             service.setCurrentUserId(Long.parseLong(userId));
             // TODO: open menu
+            System.out.println("Loged in successfuly!");
         } else {
             // TODO: show some message
         }
+    }
+
+    public void handleRegister(){
+        Long userId = Long.parseLong(userIdField.getText());
+        String password = passwordField.getText();
+
+        service.addEntity(new Login(userId, password));
     }
 
     @FXML
