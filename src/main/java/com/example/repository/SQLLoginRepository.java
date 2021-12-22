@@ -22,10 +22,15 @@ public class SQLLoginRepository implements Repository<Long, Login> {
 
     @Override
     public Login findOne(Long id) {
+
         String sql = "select * from passwords where id_user = ?";
+        String sizeSql = "select count(*) as nr from passwords where id_user=?";
 
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)){
+
+            List<Login> all = (ArrayList<Login>)findAll();
+            if (all.isEmpty()) return null;
 
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
