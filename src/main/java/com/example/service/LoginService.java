@@ -24,6 +24,7 @@ public class LoginService extends AbstractService<Long, Login>{
     }
 
     public boolean passwordIsValid(Login entity){
+        if(findOne(entity.getId()) == null) return false;
         return Objects.equals(findOne(entity.getId()).getPassword(), String.valueOf(entity.hashCode()));
     }
 }

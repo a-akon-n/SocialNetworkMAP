@@ -24,7 +24,7 @@ tasks.withType(JavaCompile) {
 
 application {
     mainModule = 'com.example.filter_sem9'
-    mainClass = 'com.example.filter_sem9.HelloApplication'
+    mainClass = 'com.example.filter_sem9.Main'
 }
 
 javafx {
@@ -38,6 +38,13 @@ dependencies {
         exclude(group: 'org.openjfx')
     }
     implementation('org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0')
+
+//    implementation('postgresql:postgresql:9.1-901-1.jdbc4')
+//    implementation('org.springframework.boot:spring-boot-starter-web')
+//        compile("org.springframework.boot:spring-boot-devtools")
+        implementation(group: 'org.postgresql', name: 'postgresql', version: '42.3.1')
+//        compile("org.springdoc:springdoc-openapi-ui:1.4.1")
+//        compile("org.springframework:spring-jdbc:5.2.5.RELEASE")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
